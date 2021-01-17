@@ -1,6 +1,6 @@
 {
   "name": "rbs-rule-engine",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "This package is for executing complex rules to manage various service flows in RBS ecosystem",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,7 +21,7 @@
     "rule",
     "engine"
   ],
-  "author": "Umut Aydin",
+  "author": "Retter Mobile",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/rettersoft/rbs-rule-engine/issues"
