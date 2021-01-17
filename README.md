@@ -66,6 +66,45 @@ MultiSelection {
 
 ## Supported Operations
 
+### Existence
+
+You can check whether an attribute exists or not. You should use **EX** operator to accomplish that.
+
+```typescript
+const engine = new RuleEngine({
+    rules: [
+        {
+            output: { result: 'R1' },
+            rules: [
+                { param1: { EX: true }, param2: { EX: false } }
+            ]
+        }
+    ]
+})
+engine.execute({ param1: 'val1', param3: 'val3' })
+```
+
+### Alphanumeric
+
+You can compare an attribute and a value alphanumerically.
+You can use **GT (greater than), GTE (greater than or equal)**, **LT (less than), LTE (less than or equal)** operators to accomplish that.
+
+Attributes and values can be a string or a number.
+
+```typescript
+const engine = new RuleEngine({
+    rules: [
+        {
+            output: { result: 'R1' },
+            rules: [
+                { param1: { GTE: 1, LT: 5 } },
+            ]
+        }
+    ]
+})
+engine.execute({ param1: 1, param3: 3 })
+```
+
 ### Equality
 
 Checking equality between an attribute and a value is possible in a few ways.
@@ -88,9 +127,13 @@ const engine = new RuleEngine({
 engine.execute({ param1: 'val1', param2: 'val2' })
 ```
 
-### Existence
+### Contains
 
-You can check whether an attribute exists or not. You should use **EX** operator to accomplish that.
+You can check whether an attribute contains a value (completely or partially).
+You can use **IN (contains), NIN (not contains)** operators to accomplish that.
+
+Attributes can be a string or an array while values can be string, array or MultiSelection instance.
+A MultiSelection instance has array values and a boolean flag to manage if rule should match all the values or single one.
 
 ```typescript
 const engine = new RuleEngine({
@@ -98,7 +141,7 @@ const engine = new RuleEngine({
         {
             output: { result: 'R1' },
             rules: [
-                { param1: { EX: true }, param2: { EX: false } }
+                { param1: { IN: ['val1'], NIN: ['val2'] } },
             ]
         }
     ]
@@ -109,7 +152,7 @@ engine.execute({ param1: 'val1', param3: 'val3' })
 ### In An Area (Near, Within, etc.)
 
 You can check a point attribute is inside a pre-defined area.
-You can use **GIN, NGN** operators to accomplish that.
+You can use **GIN (geo in), NGN (not geo in)** operators to accomplish that.
 
 It is possible to define an area by two different ways. The obvious one is that *creating a polygon*.
 Second way is defining a circle with center point and radius in meters.
@@ -131,30 +174,166 @@ const engine = new RuleEngine({
 engine.execute({ param1: point1, param2: 'val2' })
 ```
 
-### Contains
+## Examples
 
-You can check whether an attribute contains a value (completely or partially).
-You can use **IN, NIN** operators to accomplish that.
-
-Attributes can be a string or an array while values can be string, array or MultiSelection instance.
-A MultiSelection instance has array values and a boolean flag to manage if rule should match all the values or single one.
+### Zone Locator by Address
 
 ```typescript
-const engine = new RuleEngine({
+import { RuleEngine } from '@rettersoft/rbs-rule-engine'
+
+const ruleSets = {
     rules: [
         {
-            output: { result: 'R1' },
+            output: {
+                zoneId: 'ISTANBUL',
+            },
             rules: [
-                { param1: { IN: ['val1'], NIN: ['val2'] } },
-            ]
+                {
+                    city: {
+                        EQ: 'ISTANBUL',
+                    },
+                    district: {
+                        NIN: ['TUZLA'],
+                    },
+                },
+            ],
+            all: true,
+        },
+        {
+            output: {
+                zoneId: 'ANADOLU',
+            },
+            rules: [
+                {
+                    city: {
+                        NE: 'ISTANBUL',
+                    }
+                },
+                {
+                    city: {
+                        EQ: 'ISTANBUL',
+                    },
+                    district: {
+                        EQ: 'TUZLA',
+                    },
+                }
+            ],
         }
     ]
-})
-engine.execute({ param1: 'val1', param3: 'val3' })
+}
+const address = { city: 'ISTANBUL', district: 'ATASEHIR' }
+
+const engine = new RuleEngine(ruleSets)
+engine.execute(address)
 ```
 
-## Example Usage
+### Zone Locator by Coordinate
 
 ```typescript
+import { RuleEngine } from '@rettersoft/rbs-rule-engine'
 
+const ruleSets = {
+    rules: [
+        {
+            output: {
+                zoneId: 'ISTANBUL-CORE',
+            },
+            rules: [
+                {
+                    location: {
+                        GIN: [
+                            { lat: 40.94217808034843, lng: 28.787304804806414 },
+                            { lat: 41.28567804289259, lng: 28.932873652462664 },
+                            { lat: 41.22373282132952, lng: 29.37644665050954 },
+                            { lat: 40.77703439554959, lng: 29.13200084972829 }
+                        ]
+                    },
+                },
+            ],
+            all: true,
+        },
+        {
+            output: {
+                zoneId: 'ISTANBUL-BOSPHORUS',
+            },
+            rules: [
+                {
+                    location: {
+                        GIN: { center: { lat: 41, lng: 29 }, radius: 15000 }
+                    },
+                },
+            ],
+            all: true,
+        }
+    ]
+}
+const address = { location: { lat: 41, lng: 29 } }
+
+const engine = new RuleEngine(ruleSets)
+engine.execute(address)
+```
+
+### Billing Configuration
+
+```typescript
+import { RuleEngine } from '@rettersoft/rbs-rule-engine'
+
+const ruleSets = {
+    rules: [
+        {
+            output: {
+                macroMerchantId: 'MM1',
+                installment: 6,
+            },
+            rules: [
+                {
+                    paymentMethod: { IN: ['mastercard', 'visa'] },
+                    total: { GTE: 150 },
+                    rank: { EQ: 'elite' },
+                }
+            ],
+        },
+        {
+            output: {
+                macroMerchantId: 'MM1',
+                installment: 1,
+            },
+            rules: [
+                {
+                    paymentMethod: { IN: ['mastercard', 'visa'] },
+                    total: { LT: 100 },
+                }
+            ],
+        },
+        {
+            output: {
+                macroMerchantId: 'MM1',
+                installment: 2,
+            },
+            rules: [
+                {
+                    paymentMethod: { EQ: 'mastercard' },
+                    total: { GTE: 100 },
+                }
+            ],
+        },
+        {
+            output: {
+                macroMerchantId: 'MM1',
+                installment: 3,
+            },
+            rules: [
+                {
+                    paymentMethod: { EQ: 'visa' },
+                    total: { GTE: 100 },
+                }
+            ],
+        }
+    ],
+    all: true
+}
+const payment = { paymentMethod: 'visa', total: 230, rank: 'elite' }
+
+const engine = new RuleEngine(ruleSets)
+engine.execute(payment)
 ```
