@@ -1,4 +1,5 @@
 export enum Operator {
+    DATE_TIME = 'DT',
     EQUAL = 'EQ',
     EXISTS = 'EX',
     GEO_IN = 'GIN',
@@ -22,6 +23,13 @@ export interface Point {
 export interface Circle {
     center: Point
     radius: number
+}
+
+export interface DateVal {
+    format: string
+    operator?: string,
+    timezone?: number,
+    value?: string | number,
 }
 
 export interface Condition {

@@ -221,6 +221,23 @@ const BILLING_CONFIG = {
     all: false,
 }
 
+const DATE_TIME_CONFIG = {
+    rules: [
+        {
+            output: {
+                before: true,
+            },
+            rules: [
+                {
+                    timestamp: {
+                        DT: { format: 'T', operator: 'LT', timezone: 3 }
+                    },
+                },
+            ],
+        },
+    ],
+}
+
 test('locate zone by address', () => {
     const engine = new RuleEngine(ZONE_CONFIG)
 
@@ -351,4 +368,14 @@ test('filter multiple payment options 3', () => {
         rank: 'elite',
     })
     expect(result.length).toEqual(4)
+})
+
+test('date time based rule', () => {
+    const engine = new RuleEngine(DATE_TIME_CONFIG)
+
+    const result = engine.execute({
+        timestamp: Date.now() - (2 * 86400 * 1000),
+    })
+    expect(result.length).toEqual(1)
+    expect(result).toEqual([DATE_TIME_CONFIG.rules[0].output])
 })

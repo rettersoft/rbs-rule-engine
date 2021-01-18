@@ -1,3 +1,5 @@
+import addHours from 'date-fns/addHours'
+import format from 'date-fns/format'
 import { isPointInPolygon, isPointWithinRadius } from 'geolib'
 import { Operator } from './models'
 
@@ -48,7 +50,7 @@ export class RuleEngine {
                 const left = input[field]
                 if (rule[field])
                     for (const operator of Object.keys(rule[field]))
-                        if (!this.compare(operator, left, rule[field][operator])) return false
+                        if (!this.compare(operator, left, rule[field][operator], input)) return false
             } catch (e) {
                 if (this.debug) console.log(e.message)
                 return false
@@ -57,8 +59,10 @@ export class RuleEngine {
         return true
     }
 
-    protected compare(operator: string, left: any, right: any): boolean {
+    protected compare(operator: string, left: any, right: any, input: any): boolean {
         switch (operator) {
+            case Operator.DATE_TIME:
+                return this.isDateTime(left, right, input)
             case Operator.EQUAL:
                 return left === right
             case Operator.EXISTS:
@@ -111,5 +115,33 @@ export class RuleEngine {
             else if (Array.isArray(right)) return right.includes(left)
         }
         throw new Error(`IN(${JSON.stringify(left)}/${JSON.stringify(right)}) is not valid`)
+    }
+
+    protected isDateTime(left: any, right: any, input: any): any {
+        if (typeof left === 'number' || typeof left === 'string') {
+            let dt = new Date(left)
+            if (!isNaN(dt.getTime())) {
+                if (right && typeof right.format === 'string') {
+                    let from = undefined
+                    if (right.value) {
+                        if (typeof right.value === 'number') from = right.value
+                        else if (input && input[right.value]) from = input[right.value]
+                    }
+                    let value = from ? new Date(from) : new Date()
+                    if (!isNaN(value.getTime()))
+                        if (typeof right.timezone === 'number' && right.timezone) {
+                            dt = addHours(dt, right.timezone)
+                            value = addHours(value, right.timezone)
+                        }
+                        return this.compare(
+                            right.operator || 'EQ',
+                            format(dt, right.format),
+                            format(value, right.format),
+                            input,
+                        )
+                }
+            }
+        }
+        throw new Error(`DATE(${JSON.stringify(left)}/${JSON.stringify(right)}) is not valid`)
     }
 }
