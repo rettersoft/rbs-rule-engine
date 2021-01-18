@@ -1,6 +1,6 @@
 {
   "name": "@rettersoft/rbs-rule-engine",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "This package is for executing complex rules to manage various service flows in RBS ecosystem",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -46,6 +46,7 @@
     "dist/**/*"
   ],
   "dependencies": {
+    "date-fns": "^2.16.1",
     "geolib": "^3.3.1",
     "ulid": "^2.3.0"
   }

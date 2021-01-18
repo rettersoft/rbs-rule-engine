@@ -62,6 +62,13 @@ MultiSelection {
     values: any[]
     all?: boolean
 }
+
+DateTimeVal {
+    format: string
+    operator?: string,
+    timezone?: number,
+    value?: string | number,
+}
 ```
 
 ## Supported Operations
@@ -147,6 +154,37 @@ const engine = new RuleEngine({
     ]
 })
 engine.execute({ param1: 'val1', param3: 'val3' })
+```
+
+### Date / Time
+
+You can check date/time based attributes even if your operation requires a sub form of a valid date / time object.
+You can use **DT** operator to accomplish that.
+
+As you can see in models section, DateTimeVal type has 4 attributes such as *timezone*, *format*, *operator* and *value*.
+
+- If *timezone* parameter provided, timezone differences would be added after converting both sides to valid Date objects.
+- You can use *operator* attribute to select how to compare formatted values.
+- If you don't want to work with *CURRENT_TIME*, you can provide a constant value in milliseconds.
+Instead of constant value, you can use a reference to an input attribute to work with a dynamic variable.
+- Please see [date-fns' format method](https://date-fns.org/v2.16.1/docs/format) to use *format* attribute correctly.
+
+```typescript
+const engine = new RuleEngine({
+    rules: [
+        {
+            output: { result: 'R1' },
+            rules: [
+                {
+                    timestamp: {
+                        DT: { format: 'T', operator: 'LT', timezone: 3 }
+                    },
+                }
+            ]
+        }
+    ]
+})
+engine.execute({ timestamp: Date.now() - (2 * 86400 * 1000) })
 ```
 
 ### In An Area (Near, Within, etc.)
