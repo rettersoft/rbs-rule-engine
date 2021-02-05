@@ -238,6 +238,36 @@ const DATE_TIME_CONFIG = {
     ],
 }
 
+const PATHFINDER_CONFIG = {
+    rules: [
+        {
+            output: {
+                on: true,
+            },
+            rules: [
+                {
+                    'sub.val': { EQ: 'on' },
+                },
+            ],
+        },
+    ],
+}
+
+const PATHFINDER_ALL_CONFIG = {
+    rules: [
+        {
+            output: {
+                on: true,
+            },
+            rules: [
+                {
+                    'sub.val': { EQ: 'on', all: true },
+                },
+            ],
+        },
+    ],
+}
+
 test('locate zone by address', () => {
     const engine = new RuleEngine(ZONE_CONFIG)
 
@@ -378,4 +408,80 @@ test('date time based rule', () => {
     })
     expect(result.length).toEqual(1)
     expect(result).toEqual([DATE_TIME_CONFIG.rules[0].output])
+})
+
+test('mp rule' , () => {
+    const engine = new RuleEngine({
+        "all": true,
+        "rules": [
+            {
+                "output": {
+                    "paymentMethod": "masterpass"
+                },
+                "rules": [
+                    {
+                        "acceptAll": {
+                        "EX": false
+                        }
+                    }
+                ]
+            }
+        ]
+    })
+    const result = engine.execute({
+        sub: [
+            { val: 'on' }
+        ],
+        another: 'brick in the wall (:'
+    })
+    expect(result.length).toEqual(1)
+    expect(result.pop()!.paymentMethod).toEqual('masterpass')
+})
+
+test('simple pathfinder', () => {
+    const engine = new RuleEngine(PATHFINDER_CONFIG)
+    const result = engine.execute({
+        sub: { val: 'on' },
+        another: 'brick in the wall (:'
+    })
+    expect(result.length).toEqual(1)
+    expect(result.pop()!.on).toEqual(true)
+})
+
+test('array pathfinder', () => {
+    const engine = new RuleEngine(PATHFINDER_CONFIG)
+    const result = engine.execute({
+        sub: [
+            { val: 'on' }
+        ],
+        another: 'brick in the wall (:'
+    })
+    expect(result.length).toEqual(1)
+    expect(result.pop()!.on).toEqual(true)
+})
+
+test('array pathfinder 2', () => {
+    const engine = new RuleEngine(PATHFINDER_CONFIG)
+    const result = engine.execute({
+        sub: [
+            { val: 'on' },
+            { val: 'off' },
+        ],
+        another: 'brick in the wall (:'
+    })
+    expect(result.length).toEqual(1)
+    expect(result.pop()!.on).toEqual(true)
+})
+
+test('array pathfinder all', () => {
+    const engine = new RuleEngine(PATHFINDER_ALL_CONFIG)
+    const result = engine.execute({
+        sub: [
+            { val: 'on', id: 1 },
+            { val: 'on', id: 2 },
+        ],
+        another: 'brick in the wall (:'
+    })
+    expect(result.length).toEqual(1)
+    expect(result.pop()!.on).toEqual(true)
 })

@@ -47,16 +47,46 @@ export class RuleEngine {
     protected checkRule(input: any, rule: any): boolean {
         for (const field of Object.keys(rule)) {
             try {
-                const left = input[field]
-                if (rule[field])
-                    for (const operator of Object.keys(rule[field]))
-                        if (!this.compare(operator, left, rule[field][operator], input)) return false
+                const parts = field.split('.')
+                const left = this.resolveValue(input, parts)
+                if (rule[field]) {
+                    if (Array.isArray(parts) && parts.length) {
+                        let result = true
+                        if (rule[field].all) {
+                            result = left.every((sub: any) => {
+                                const param = this.resolveValue(sub, [...parts])
+                                return this.tryRule(rule, field, param, input)
+                            })
+                        }
+                        return result
+                    }
+
+                    if (!this.tryRule(rule, field, left, input)) return false
+                }
             } catch (e) {
                 if (this.debug) console.log(e.message)
                 return false
             }
         }
         return true
+    }
+
+    protected tryRule(rule: any, field: string, param: string, input: any) {
+        for (const operator of Object.keys(rule[field])) {
+            if (operator === 'all') continue
+            else if (!this.compare(operator, param, rule[field][operator], input))
+                return false
+        }
+        return true
+    }
+
+    protected resolveValue(input: any, parts: string[]): any {
+        const part = parts.shift()
+        if (!part) return undefined
+
+        const left = input[part]
+        if (Array.isArray(left) || !parts.length) return left
+        else return this.resolveValue(left, parts)
     }
 
     protected compare(operator: string, left: any, right: any, input: any): boolean {
@@ -133,12 +163,12 @@ export class RuleEngine {
                             dt = addHours(dt, right.timezone)
                             value = addHours(value, right.timezone)
                         }
-                        return this.compare(
-                            right.operator || 'EQ',
-                            format(dt, right.format),
-                            format(value, right.format),
-                            input,
-                        )
+                    return this.compare(
+                        right.operator || 'EQ',
+                        format(dt, right.format),
+                        format(value, right.format),
+                        input,
+                    )
                 }
             }
         }

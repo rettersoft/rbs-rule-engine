@@ -39,6 +39,23 @@ engine.execute(input)
 ## Models
 
 ```typescript
+Operator {
+    DATE_TIME = 'DT',
+    EQUAL = 'EQ',
+    EXISTS = 'EX',
+    GEO_IN = 'GIN',
+    GREATER_THAN = 'GT',
+    GREATER_THAN_EQUAL = 'GTE',
+    IN = 'IN',
+    LESS_THAN = 'LT',
+    LESS_THAN_EQUAL = 'LTE',
+    LIKE = 'LK',
+    NOT_EQUAL = 'NE',
+    NOT_GEO_IN = 'NGN',
+    NOT_IN = 'NIN',
+    NOT_LIKE = 'NL',
+}
+
 Point {
     lat: number
     lng: number
@@ -72,6 +89,38 @@ DateTimeVal {
 ```
 
 ## Supported Operations
+
+You can create rule for nested objects just like you create rules for flat object.
+To accomplish that, please see the example below.
+
+```typescript
+const engine = new RuleEngine({
+    rules: [
+        {
+            output: {
+                on: true,
+            },
+            rules: [
+                {
+                    'sub.val': {
+                        EQ: 'on',
+                        all: true
+                        // true: should work for all items in an array
+                        // false: working for single item is enough
+                    },
+                },
+            ],
+        },
+    ],
+})
+const result = engine.execute({
+    sub: [
+        { val: 'on', id: 1 },
+        { val: 'on', id: 2 },
+    ],
+    another: 'brick in the wall (:'
+})
+```
 
 ### Existence
 
