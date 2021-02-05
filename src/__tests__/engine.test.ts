@@ -268,6 +268,21 @@ const PATHFINDER_ALL_CONFIG = {
     ],
 }
 
+const ARRAY_PATHFINDER_CONFIG = {
+    rules: [
+        {
+            output: {
+                on: true,
+            },
+            rules: [
+                {
+                    'sub.val': { EQ: 'on', all: true },
+                },
+            ],
+        },
+    ],
+}
+
 test('locate zone by address', () => {
     const engine = new RuleEngine(ZONE_CONFIG)
 
@@ -483,5 +498,43 @@ test('array pathfinder all', () => {
         another: 'brick in the wall (:'
     })
     expect(result.length).toEqual(1)
+    expect(result.pop()!.on).toEqual(true)
+})
+
+test('array pathfinder all', () => {
+    const engine = new RuleEngine(PATHFINDER_ALL_CONFIG)
+    const result = engine.execute({
+        sub: [
+            { val: 'on', id: 1 },
+            { val: 'on', id: 2 },
+        ],
+        another: 'brick in the wall (:'
+    })
+    expect(result.length).toEqual(1)
+    expect(result.pop()!.on).toEqual(true)
+})
+
+test('array pathfinder iteration', () => {
+    const engine = new RuleEngine(ARRAY_PATHFINDER_CONFIG)
+    const input = [
+        {
+            id: Math.random(),
+            sub: [
+                { val: 'on', id: 1 },
+                { val: 'on', id: 2 },
+            ],
+            another: 'brick in the wall (:'
+        },
+        {
+            id: Math.random(),
+            sub: [
+                { val: 'on', id: 1 },
+                { val: 'on', id: 2 },
+            ],
+            another: 'brick in the wall (:'
+        }
+    ]
+    const result = engine.execute(input)
+    expect(result.length).toEqual(input.length)
     expect(result.pop()!.on).toEqual(true)
 })

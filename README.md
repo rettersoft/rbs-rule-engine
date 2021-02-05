@@ -90,8 +90,8 @@ DateTimeVal {
 
 ## Supported Operations
 
-You can create rule for nested objects just like you create rules for flat object.
-To accomplish that, please see the example below.
+You can create rules for nested objects / arrays just like you create rules for flat object.
+To accomplish that, please see the examples below.
 
 ```typescript
 const engine = new RuleEngine({
@@ -120,6 +120,16 @@ const result = engine.execute({
     ],
     another: 'brick in the wall (:'
 })
+
+const result2 = engine.execute([
+    {
+        sub: [
+            { val: 'on', id: 1 },
+            { val: 'on', id: 2 },
+        ],
+        another: 'brick in the wall (:'
+    }
+])
 ```
 
 ### Existence

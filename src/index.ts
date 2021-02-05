@@ -14,16 +14,28 @@ export class RuleEngine {
         this.ruleSets = ruleSets
     }
 
-    execute(input: any): any {
-        const outputs: any[] = []
+    execute(input: any): any[] {
         const { all, rules } = this.ruleSets
         if (Array.isArray(rules) && rules.length) {
-            for (const ruleSet of rules) {
-                const output = this.checkRuleSet(input, ruleSet)
-                if (output) {
-                    outputs.push(output)
-                    if (!all) return outputs
-                }
+            if (Array.isArray(input)) {
+                if (!input.length) return []
+
+                const outputs: any[] = []
+                for (const item of input) 
+                    outputs.push(...this.tryRuleSet(item, rules, all))
+                return outputs
+            } else return this.tryRuleSet(input, rules, all)
+        }
+        return []
+    }
+
+    protected tryRuleSet(input: any, rules: any[], all: boolean) {
+        const outputs: any[] = []
+        for (const ruleSet of rules) {
+            const output = this.checkRuleSet(input, ruleSet)
+            if (output) {
+                outputs.push(output)
+                if (!all) return outputs
             }
         }
         return outputs
