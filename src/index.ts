@@ -47,11 +47,11 @@ export class RuleEngine {
         if (Array.isArray(rules)) {
             for (const rule of rules) {
                 if (this.checkRule(input, rule)) {
-                    if (!all) return output
+                    if (!all) return { input, output }
                     else passedRules++
                 }
             }
-            return passedRules === rules.length ? output : undefined
+            return passedRules === rules.length ? { input, output } : undefined
         }
         return undefined
     }

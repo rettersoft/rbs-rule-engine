@@ -288,7 +288,7 @@ test('locate zone by address', () => {
 
     const result = engine.execute({ city: 'ISTANBUL', district: 'EUROPEAN-DISTRICT' })
     expect(result.length).toEqual(1)
-    expect(result).toEqual([ZONE_CONFIG.rules[0].output])
+    expect(result.pop().output).toEqual(ZONE_CONFIG.rules[0].output)
 })
 
 test('locate zone by address 2', () => {
@@ -299,7 +299,7 @@ test('locate zone by address 2', () => {
         location: { lat: 41, lng: 29 },
     })
     expect(result.length).toEqual(1)
-    expect(result).toEqual([ZONE_CONFIG.rules[3].output])
+    expect(result.pop().output).toEqual(ZONE_CONFIG.rules[3].output)
 })
 
 test('locate multiple zones by address', () => {
@@ -337,7 +337,7 @@ test('filter payment options', () => {
         rank: 'elite',
     })
     expect(result.length).toEqual(1)
-    expect(result).toEqual([BILLING_CONFIG.rules[3].output])
+    expect(result.pop().output).toEqual(BILLING_CONFIG.rules[3].output)
 })
 
 test('filter payment options 2', () => {
@@ -349,7 +349,7 @@ test('filter payment options 2', () => {
         rank: 'elite',
     })
     expect(result.length).toEqual(1)
-    expect(result).toEqual([BILLING_CONFIG.rules[2].output])
+    expect(result.pop().output).toEqual(BILLING_CONFIG.rules[2].output)
 })
 
 test('filter payment options 3', () => {
@@ -361,7 +361,7 @@ test('filter payment options 3', () => {
         rank: 'elite',
     })
     expect(result.length).toEqual(1)
-    expect(result).toEqual([BILLING_CONFIG.rules[0].output])
+    expect(result.pop().output).toEqual(BILLING_CONFIG.rules[0].output)
 })
 
 test('filter payment options 4', () => {
@@ -372,7 +372,7 @@ test('filter payment options 4', () => {
         total: 60,
     })
     expect(result.length).toEqual(1)
-    expect(result).toEqual([BILLING_CONFIG.rules[2].output])
+    expect(result.pop().output).toEqual(BILLING_CONFIG.rules[2].output)
 })
 
 test('filter multiple payment options', () => {
@@ -422,7 +422,7 @@ test('date time based rule', () => {
         timestamp: Date.now() - (2 * 86400 * 1000),
     })
     expect(result.length).toEqual(1)
-    expect(result).toEqual([DATE_TIME_CONFIG.rules[0].output])
+    expect(result.pop().output).toEqual(DATE_TIME_CONFIG.rules[0].output)
 })
 
 test('mp rule' , () => {
@@ -450,7 +450,7 @@ test('mp rule' , () => {
         another: 'brick in the wall (:'
     })
     expect(result.length).toEqual(1)
-    expect(result.pop()!.paymentMethod).toEqual('masterpass')
+    expect(result.pop().output.paymentMethod).toEqual('masterpass')
 })
 
 test('simple pathfinder', () => {
@@ -460,7 +460,7 @@ test('simple pathfinder', () => {
         another: 'brick in the wall (:'
     })
     expect(result.length).toEqual(1)
-    expect(result.pop()!.on).toEqual(true)
+    expect(result.pop().output.on).toEqual(true)
 })
 
 test('array pathfinder', () => {
@@ -472,7 +472,7 @@ test('array pathfinder', () => {
         another: 'brick in the wall (:'
     })
     expect(result.length).toEqual(1)
-    expect(result.pop()!.on).toEqual(true)
+    expect(result.pop().output.on).toEqual(true)
 })
 
 test('array pathfinder 2', () => {
@@ -485,7 +485,7 @@ test('array pathfinder 2', () => {
         another: 'brick in the wall (:'
     })
     expect(result.length).toEqual(1)
-    expect(result.pop()!.on).toEqual(true)
+    expect(result.pop().output.on).toEqual(true)
 })
 
 test('array pathfinder all', () => {
@@ -498,7 +498,7 @@ test('array pathfinder all', () => {
         another: 'brick in the wall (:'
     })
     expect(result.length).toEqual(1)
-    expect(result.pop()!.on).toEqual(true)
+    expect(result.pop().output.on).toEqual(true)
 })
 
 test('array pathfinder all', () => {
@@ -511,7 +511,7 @@ test('array pathfinder all', () => {
         another: 'brick in the wall (:'
     })
     expect(result.length).toEqual(1)
-    expect(result.pop()!.on).toEqual(true)
+    expect(result.pop().output.on).toEqual(true)
 })
 
 test('array pathfinder iteration', () => {
@@ -536,5 +536,5 @@ test('array pathfinder iteration', () => {
     ]
     const result = engine.execute(input)
     expect(result.length).toEqual(input.length)
-    expect(result.pop()!.on).toEqual(true)
+    expect(result.pop().output.on).toEqual(true)
 })
