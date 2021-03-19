@@ -364,17 +364,6 @@ test('filter payment options 3', () => {
     expect(result.pop().output).toEqual(BILLING_CONFIG.rules[0].output)
 })
 
-test('filter payment options 4', () => {
-    const engine = new RuleEngine(BILLING_CONFIG)
-
-    const result = engine.execute({
-        paymentMethod: ['mastercard', 'troy'],
-        total: 60,
-    })
-    expect(result.length).toEqual(1)
-    expect(result.pop().output).toEqual(BILLING_CONFIG.rules[2].output)
-})
-
 test('filter multiple payment options', () => {
     const config = Object.assign({}, BILLING_CONFIG, { all: true })
     const engine = new RuleEngine(config)
@@ -463,7 +452,7 @@ test('simple pathfinder', () => {
     expect(result.pop().output.on).toEqual(true)
 })
 
-test('array pathfinder', () => {
+test.skip('array pathfinder', () => {
     const engine = new RuleEngine(PATHFINDER_CONFIG)
     const result = engine.execute({
         sub: [
@@ -475,7 +464,7 @@ test('array pathfinder', () => {
     expect(result.pop().output.on).toEqual(true)
 })
 
-test('array pathfinder 2', () => {
+test.skip('array pathfinder 2', () => {
     const engine = new RuleEngine(PATHFINDER_CONFIG)
     const result = engine.execute({
         sub: [
@@ -488,7 +477,7 @@ test('array pathfinder 2', () => {
     expect(result.pop().output.on).toEqual(true)
 })
 
-test('array pathfinder all', () => {
+test.skip('array pathfinder all', () => {
     const engine = new RuleEngine(PATHFINDER_ALL_CONFIG)
     const result = engine.execute({
         sub: [
@@ -501,7 +490,7 @@ test('array pathfinder all', () => {
     expect(result.pop().output.on).toEqual(true)
 })
 
-test('array pathfinder all', () => {
+test.skip('array pathfinder all', () => {
     const engine = new RuleEngine(PATHFINDER_ALL_CONFIG)
     const result = engine.execute({
         sub: [
@@ -514,7 +503,7 @@ test('array pathfinder all', () => {
     expect(result.pop().output.on).toEqual(true)
 })
 
-test('array pathfinder iteration', () => {
+test.skip('array pathfinder iteration', () => {
     const engine = new RuleEngine(ARRAY_PATHFINDER_CONFIG)
     const input = [
         {
@@ -537,4 +526,722 @@ test('array pathfinder iteration', () => {
     const result = engine.execute(input)
     expect(result.length).toEqual(input.length)
     expect(result.pop().output.on).toEqual(true)
+})
+
+test('rbs internal test fails', () => {
+    const engine = new RuleEngine({
+        "rules": [
+            {
+                "output": {
+                    "ok": true
+                },
+                "rules": [
+                    {
+                        "canCreate.0.serviceId": {
+                            "EQ": "rbs.wms"
+                        }
+                    }
+                ]
+            }
+        ]
+    })
+    const input = {
+        "action": "rbs.process.request.START",
+        "actionType": "request",
+        "identity": "enduser",
+        "projectId": "3b7eea955170401685ec7ac0187ef787",
+        "serviceId": "rbs.pm",
+        "userId": "61699878-5bfe-482f-a711-5bd533dcaca1",
+        "processId": "CREATE_ORDER_AND_SHIPMENTS",
+        "processExecutionId": "",
+        "executionId": "01F14HAM5S7EBKXGY7GD0F9ZD9",
+        "step": {
+            "id": "CAN_CREATE",
+            "action": "rbs.order.request.CAN_CREATE",
+            "inputPath": "$.payload",
+            "resultPath": "canCreateRaw",
+            "outputPath": "$",
+            "errorPath": "$.0.response.error"
+        },
+        "token": "2103190603LB0J3BU4",
+        "payload": {
+            "address": {
+                "shipmentAddress": {
+                    "addressId": "01EYMX24JNP5439ND40RWM3GPS",
+                    "name": "Test Address",
+                    "country": "TÜRKİYE",
+                    "city": "İSTANBUL",
+                    "district": "ATAŞEHİR"
+                },
+                "invoiceAddress": {
+                    "addressId": "01EYMXKC3JPBGRKQVNM3KP3W31",
+                    "name": "Test Address",
+                    "country": "TÜRKİYE",
+                    "city": "İSTANBUL",
+                    "district": "ATAŞEHİR"
+                }
+            },
+            "crm": {
+                "userId": "c85a5c6f11b1381c3cee0608cd80dec8"
+            },
+            "cart": {
+                "totalPriceToPay": 269100,
+                "totalPrice": 30000,
+                "serviceFeeDiscount": 900,
+                "discount": 3090,
+                "appliedPromotions": [
+                    {
+                        "title": "Deneme",
+                        "appliedDiscount": 0,
+                        "appliedServiceFeeDiscount": 900
+                    },
+                    {
+                        "appliedDiscount": 0,
+                        "appliedServiceFeeDiscount": 0
+                    },
+                    {
+                        "appliedDiscount": 3090,
+                        "appliedServiceFeeDiscount": 0
+                    }
+                ],
+                "promotionSuggestions": {
+                    "minAmountForFreeServiceFee": 13300
+                },
+                "items": [
+                    {
+                        "merchantId": "AliMerchant",
+                        "variantGroupId": "AliVaraiantGroupId",
+                        "itemId": "AliItemId",
+                        "qty": 3,
+                        "product": {
+                            "images": [
+                                "7208d184-f864-416e-8495-36a7eb897869"
+                            ],
+                            "attributes": [
+                                {
+                                    "fieldNameLabel": "CanReturnItem",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "CanReturnItem",
+                                    "valueLabel": "true",
+                                    "value": true
+                                },
+                                {
+                                    "fieldNameLabel": "Description",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "Description",
+                                    "valueLabel": "Ali description",
+                                    "value": "Ali description"
+                                },
+                                {
+                                    "fieldNameLabel": "test",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "test",
+                                    "valueLabel": "",
+                                    "value": ""
+                                },
+                                {
+                                    "fieldNameLabel": "uruncesidi",
+                                    "attType": "LIST",
+                                    "fieldName": "uruncesidi",
+                                    "valueLabel": "",
+                                    "value": ""
+                                },
+                                {
+                                    "fieldNameLabel": "ItemFeatureBaran",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "ItemFeatureBaran",
+                                    "valueLabel": "",
+                                    "value": ""
+                                },
+                                {
+                                    "fieldNameLabel": "isVirtual",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "isVirtual",
+                                    "valueLabel": "true",
+                                    "value": true
+                                },
+                                {
+                                    "fieldNameLabel": "shortDescription",
+                                    "attType": "TEXT",
+                                    "fieldName": "shortDescription",
+                                    "valueLabel": "",
+                                    "value": ""
+                                },
+                                {
+                                    "badges": [],
+                                    "listValue": [
+                                        "demoCat"
+                                    ],
+                                    "attType": "LIST",
+                                    "fieldName": "categories",
+                                    "listValueLabel": [
+                                        "demoCat"
+                                    ],
+                                    "valueLabel": "",
+                                    "fieldNameLabel": "categories",
+                                    "value": ""
+                                },
+                                {
+                                    "fieldNameLabel": "shortName",
+                                    "attType": "TEXT",
+                                    "fieldName": "shortName",
+                                    "valueLabel": "Ali Product",
+                                    "value": "Ali Product"
+                                },
+                                {
+                                    "badges": [],
+                                    "listValue": [],
+                                    "attType": "LIST",
+                                    "fieldName": "productdetailIcons",
+                                    "listValueLabel": [],
+                                    "valueLabel": "",
+                                    "fieldNameLabel": "productdetailIcons",
+                                    "value": ""
+                                },
+                                {
+                                    "fieldNameLabel": "noDiscount",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "noDiscount",
+                                    "valueLabel": "true",
+                                    "value": true
+                                },
+                                {
+                                    "badges": [],
+                                    "listValue": [],
+                                    "attType": "LIST",
+                                    "fieldName": "productFeature",
+                                    "listValueLabel": [],
+                                    "valueLabel": "",
+                                    "fieldNameLabel": "productFeature",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "stock": 1,
+                        "price": {
+                            "normal": 50000,
+                            "discounted": 10000,
+                            "priceToPay": 8970
+                        }
+                    }
+                ]
+            },
+            "billing": {
+                "paymentOptions": [
+                    {
+                        "amount": 26910,
+                        "authType": "AUTH",
+                        "paymentMethod": "iyzico",
+                        "providerConfigId": "iyzico1",
+                        "installmentCount": 1
+                    }
+                ]
+            },
+            "logistics": {
+                "zoneId": "zoneA",
+                "note": "Lütfen zili çalmayın!",
+                "pools": {
+                    "type": "CARGO",
+                    "provider": "MNG",
+                    "storeId": "pinardepo",
+                    "fee": 9
+                }
+            }
+        },
+        "canCreateRaw": [
+            {
+                "errorCode": "0",
+                "errors": [],
+                "status": 200,
+                "serviceId": "rbs.address",
+                "durationInMilliseconds": 862,
+                "executionDurationInMilliseconds": 887,
+                "response": {
+                    "can": true
+                },
+                "headers": {
+                    "date": "Fri, 19 Mar 2021 06:03:59 GMT",
+                    "content-type": "text/plain; charset=utf-8",
+                    "content-length": "21",
+                    "connection": "close",
+                    "access-control-allow-origin": "*",
+                    "access-control-allow-method": "*",
+                    "access-control-allow-credentials": "true",
+                    "cache-control": "no-cache, max-age=0",
+                    "access-control-allow-headers": "*",
+                    "apigw-requestid": "ca7APgTNjoEEPWg=",
+                    "Cache-Control": "no-cache, max-age=0"
+                },
+                "isExtract": false
+            },
+            {
+                "errorCode": "0",
+                "errors": [],
+                "status": 200,
+                "serviceId": "rbs.logistics",
+                "durationInMilliseconds": 2685,
+                "executionDurationInMilliseconds": 2711,
+                "response": {
+                    "can": true
+                },
+                "headers": {
+                    "date": "Fri, 19 Mar 2021 06:04:00 GMT",
+                    "content-type": "text/plain; charset=utf-8",
+                    "content-length": "21",
+                    "connection": "close",
+                    "access-control-allow-headers": "*",
+                    "access-control-allow-origin": "*",
+                    "access-control-allow-method": "*",
+                    "access-control-allow-credentials": "true",
+                    "cache-control": "no-cache, max-age=0",
+                    "apigw-requestid": "ca7APju7joEEMxg=",
+                    "Cache-Control": "no-cache, max-age=0"
+                },
+                "isExtract": false
+            },
+            {
+                "errorCode": "0",
+                "errors": [],
+                "status": 200,
+                "serviceId": "rbs.wms",
+                "durationInMilliseconds": 1445,
+                "executionDurationInMilliseconds": 1471,
+                "response": {
+                    "can": true
+                },
+                "headers": {
+                    "date": "Fri, 19 Mar 2021 06:03:59 GMT",
+                    "content-type": "text/plain; charset=utf-8",
+                    "content-length": "21",
+                    "connection": "close",
+                    "access-control-allow-headers": "*",
+                    "access-control-allow-origin": "*",
+                    "access-control-allow-method": "*",
+                    "access-control-allow-credentials": "true",
+                    "cache-control": "no-cache, max-age=0",
+                    "apigw-requestid": "ca7APgTsDoEEJEg=",
+                    "Cache-Control": "no-cache, max-age=0"
+                },
+                "isExtract": false
+            },
+            {
+                "errorCode": "0",
+                "errors": [],
+                "status": 200,
+                "serviceId": "rbs.billing",
+                "durationInMilliseconds": 2034,
+                "executionDurationInMilliseconds": 2060,
+                "response": {
+                    "can": false
+                },
+                "headers": {
+                    "date": "Fri, 19 Mar 2021 06:04:00 GMT",
+                    "content-type": "text/plain; charset=utf-8",
+                    "content-length": "22",
+                    "connection": "close",
+                    "access-control-allow-method": "*",
+                    "cache-control": "no-cache, max-age=0",
+                    "apigw-requestid": "ca7APjpnDoEEPaA=",
+                    "Cache-Control": "no-cache, max-age=0"
+                },
+                "isExtract": false
+            },
+            {
+                "errorCode": "0",
+                "errors": [],
+                "status": 200,
+                "serviceId": "rbs.cart",
+                "durationInMilliseconds": 3793,
+                "executionDurationInMilliseconds": 3819,
+                "response": {
+                    "can": false
+                },
+                "headers": {
+                    "date": "Fri, 19 Mar 2021 06:04:01 GMT",
+                    "content-type": "text/plain; charset=utf-8",
+                    "content-length": "22",
+                    "connection": "close",
+                    "access-control-allow-origin": "*",
+                    "access-control-allow-method": "*",
+                    "access-control-allow-credentials": "true",
+                    "cache-control": "no-cache, max-age=0",
+                    "access-control-allow-headers": "*",
+                    "apigw-requestid": "ca7AQi5gjoEEMVQ=",
+                    "Cache-Control": "no-cache, max-age=0"
+                },
+                "isExtract": false
+            }
+        ],
+        "canCreate": [
+            {
+                "serviceId": "rbs.billing",
+                "error": "{{this.response.cause}}"
+            },
+            {
+                "serviceId": "rbs.cart",
+                "error": "{{this.response.cause}}"
+            }
+        ]
+    }
+    const result = engine.execute(input)
+    expect(result.length).toEqual(0)
+})
+
+test('rbs internal test pass', () => {
+    const engine = new RuleEngine({
+        "rules": [
+            {
+                "output": {
+                    "ok": true
+                },
+                "rules": [
+                    {
+                        "canCreate.0.serviceId": {
+                            "EQ": "rbs.billing"
+                        }
+                    }
+                ]
+            }
+        ]
+    })
+    const input = {
+        "action": "rbs.process.request.START",
+        "actionType": "request",
+        "identity": "enduser",
+        "projectId": "3b7eea955170401685ec7ac0187ef787",
+        "serviceId": "rbs.pm",
+        "userId": "61699878-5bfe-482f-a711-5bd533dcaca1",
+        "processId": "CREATE_ORDER_AND_SHIPMENTS",
+        "processExecutionId": "",
+        "executionId": "01F14HAM5S7EBKXGY7GD0F9ZD9",
+        "step": {
+            "id": "CAN_CREATE",
+            "action": "rbs.order.request.CAN_CREATE",
+            "inputPath": "$.payload",
+            "resultPath": "canCreateRaw",
+            "outputPath": "$",
+            "errorPath": "$.0.response.error"
+        },
+        "token": "2103190603LB0J3BU4",
+        "payload": {
+            "address": {
+                "shipmentAddress": {
+                    "addressId": "01EYMX24JNP5439ND40RWM3GPS",
+                    "name": "Test Address",
+                    "country": "TÜRKİYE",
+                    "city": "İSTANBUL",
+                    "district": "ATAŞEHİR"
+                },
+                "invoiceAddress": {
+                    "addressId": "01EYMXKC3JPBGRKQVNM3KP3W31",
+                    "name": "Test Address",
+                    "country": "TÜRKİYE",
+                    "city": "İSTANBUL",
+                    "district": "ATAŞEHİR"
+                }
+            },
+            "crm": {
+                "userId": "c85a5c6f11b1381c3cee0608cd80dec8"
+            },
+            "cart": {
+                "totalPriceToPay": 269100,
+                "totalPrice": 30000,
+                "serviceFeeDiscount": 900,
+                "discount": 3090,
+                "appliedPromotions": [
+                    {
+                        "title": "Deneme",
+                        "appliedDiscount": 0,
+                        "appliedServiceFeeDiscount": 900
+                    },
+                    {
+                        "appliedDiscount": 0,
+                        "appliedServiceFeeDiscount": 0
+                    },
+                    {
+                        "appliedDiscount": 3090,
+                        "appliedServiceFeeDiscount": 0
+                    }
+                ],
+                "promotionSuggestions": {
+                    "minAmountForFreeServiceFee": 13300
+                },
+                "items": [
+                    {
+                        "merchantId": "AliMerchant",
+                        "variantGroupId": "AliVaraiantGroupId",
+                        "itemId": "AliItemId",
+                        "qty": 3,
+                        "product": {
+                            "images": [
+                                "7208d184-f864-416e-8495-36a7eb897869"
+                            ],
+                            "attributes": [
+                                {
+                                    "fieldNameLabel": "CanReturnItem",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "CanReturnItem",
+                                    "valueLabel": "true",
+                                    "value": true
+                                },
+                                {
+                                    "fieldNameLabel": "Description",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "Description",
+                                    "valueLabel": "Ali description",
+                                    "value": "Ali description"
+                                },
+                                {
+                                    "fieldNameLabel": "test",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "test",
+                                    "valueLabel": "",
+                                    "value": ""
+                                },
+                                {
+                                    "fieldNameLabel": "uruncesidi",
+                                    "attType": "LIST",
+                                    "fieldName": "uruncesidi",
+                                    "valueLabel": "",
+                                    "value": ""
+                                },
+                                {
+                                    "fieldNameLabel": "ItemFeatureBaran",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "ItemFeatureBaran",
+                                    "valueLabel": "",
+                                    "value": ""
+                                },
+                                {
+                                    "fieldNameLabel": "isVirtual",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "isVirtual",
+                                    "valueLabel": "true",
+                                    "value": true
+                                },
+                                {
+                                    "fieldNameLabel": "shortDescription",
+                                    "attType": "TEXT",
+                                    "fieldName": "shortDescription",
+                                    "valueLabel": "",
+                                    "value": ""
+                                },
+                                {
+                                    "badges": [],
+                                    "listValue": [
+                                        "demoCat"
+                                    ],
+                                    "attType": "LIST",
+                                    "fieldName": "categories",
+                                    "listValueLabel": [
+                                        "demoCat"
+                                    ],
+                                    "valueLabel": "",
+                                    "fieldNameLabel": "categories",
+                                    "value": ""
+                                },
+                                {
+                                    "fieldNameLabel": "shortName",
+                                    "attType": "TEXT",
+                                    "fieldName": "shortName",
+                                    "valueLabel": "Ali Product",
+                                    "value": "Ali Product"
+                                },
+                                {
+                                    "badges": [],
+                                    "listValue": [],
+                                    "attType": "LIST",
+                                    "fieldName": "productdetailIcons",
+                                    "listValueLabel": [],
+                                    "valueLabel": "",
+                                    "fieldNameLabel": "productdetailIcons",
+                                    "value": ""
+                                },
+                                {
+                                    "fieldNameLabel": "noDiscount",
+                                    "attType": "UNKNOWN_TYPE",
+                                    "fieldName": "noDiscount",
+                                    "valueLabel": "true",
+                                    "value": true
+                                },
+                                {
+                                    "badges": [],
+                                    "listValue": [],
+                                    "attType": "LIST",
+                                    "fieldName": "productFeature",
+                                    "listValueLabel": [],
+                                    "valueLabel": "",
+                                    "fieldNameLabel": "productFeature",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "stock": 1,
+                        "price": {
+                            "normal": 50000,
+                            "discounted": 10000,
+                            "priceToPay": 8970
+                        }
+                    }
+                ]
+            },
+            "billing": {
+                "paymentOptions": [
+                    {
+                        "amount": 26910,
+                        "authType": "AUTH",
+                        "paymentMethod": "iyzico",
+                        "providerConfigId": "iyzico1",
+                        "installmentCount": 1
+                    }
+                ]
+            },
+            "logistics": {
+                "zoneId": "zoneA",
+                "note": "Lütfen zili çalmayın!",
+                "pools": {
+                    "type": "CARGO",
+                    "provider": "MNG",
+                    "storeId": "pinardepo",
+                    "fee": 9
+                }
+            }
+        },
+        "canCreateRaw": [
+            {
+                "errorCode": "0",
+                "errors": [],
+                "status": 200,
+                "serviceId": "rbs.address",
+                "durationInMilliseconds": 862,
+                "executionDurationInMilliseconds": 887,
+                "response": {
+                    "can": true
+                },
+                "headers": {
+                    "date": "Fri, 19 Mar 2021 06:03:59 GMT",
+                    "content-type": "text/plain; charset=utf-8",
+                    "content-length": "21",
+                    "connection": "close",
+                    "access-control-allow-origin": "*",
+                    "access-control-allow-method": "*",
+                    "access-control-allow-credentials": "true",
+                    "cache-control": "no-cache, max-age=0",
+                    "access-control-allow-headers": "*",
+                    "apigw-requestid": "ca7APgTNjoEEPWg=",
+                    "Cache-Control": "no-cache, max-age=0"
+                },
+                "isExtract": false
+            },
+            {
+                "errorCode": "0",
+                "errors": [],
+                "status": 200,
+                "serviceId": "rbs.logistics",
+                "durationInMilliseconds": 2685,
+                "executionDurationInMilliseconds": 2711,
+                "response": {
+                    "can": true
+                },
+                "headers": {
+                    "date": "Fri, 19 Mar 2021 06:04:00 GMT",
+                    "content-type": "text/plain; charset=utf-8",
+                    "content-length": "21",
+                    "connection": "close",
+                    "access-control-allow-headers": "*",
+                    "access-control-allow-origin": "*",
+                    "access-control-allow-method": "*",
+                    "access-control-allow-credentials": "true",
+                    "cache-control": "no-cache, max-age=0",
+                    "apigw-requestid": "ca7APju7joEEMxg=",
+                    "Cache-Control": "no-cache, max-age=0"
+                },
+                "isExtract": false
+            },
+            {
+                "errorCode": "0",
+                "errors": [],
+                "status": 200,
+                "serviceId": "rbs.wms",
+                "durationInMilliseconds": 1445,
+                "executionDurationInMilliseconds": 1471,
+                "response": {
+                    "can": true
+                },
+                "headers": {
+                    "date": "Fri, 19 Mar 2021 06:03:59 GMT",
+                    "content-type": "text/plain; charset=utf-8",
+                    "content-length": "21",
+                    "connection": "close",
+                    "access-control-allow-headers": "*",
+                    "access-control-allow-origin": "*",
+                    "access-control-allow-method": "*",
+                    "access-control-allow-credentials": "true",
+                    "cache-control": "no-cache, max-age=0",
+                    "apigw-requestid": "ca7APgTsDoEEJEg=",
+                    "Cache-Control": "no-cache, max-age=0"
+                },
+                "isExtract": false
+            },
+            {
+                "errorCode": "0",
+                "errors": [],
+                "status": 200,
+                "serviceId": "rbs.billing",
+                "durationInMilliseconds": 2034,
+                "executionDurationInMilliseconds": 2060,
+                "response": {
+                    "can": false
+                },
+                "headers": {
+                    "date": "Fri, 19 Mar 2021 06:04:00 GMT",
+                    "content-type": "text/plain; charset=utf-8",
+                    "content-length": "22",
+                    "connection": "close",
+                    "access-control-allow-method": "*",
+                    "cache-control": "no-cache, max-age=0",
+                    "apigw-requestid": "ca7APjpnDoEEPaA=",
+                    "Cache-Control": "no-cache, max-age=0"
+                },
+                "isExtract": false
+            },
+            {
+                "errorCode": "0",
+                "errors": [],
+                "status": 200,
+                "serviceId": "rbs.cart",
+                "durationInMilliseconds": 3793,
+                "executionDurationInMilliseconds": 3819,
+                "response": {
+                    "can": false
+                },
+                "headers": {
+                    "date": "Fri, 19 Mar 2021 06:04:01 GMT",
+                    "content-type": "text/plain; charset=utf-8",
+                    "content-length": "22",
+                    "connection": "close",
+                    "access-control-allow-origin": "*",
+                    "access-control-allow-method": "*",
+                    "access-control-allow-credentials": "true",
+                    "cache-control": "no-cache, max-age=0",
+                    "access-control-allow-headers": "*",
+                    "apigw-requestid": "ca7AQi5gjoEEMVQ=",
+                    "Cache-Control": "no-cache, max-age=0"
+                },
+                "isExtract": false
+            }
+        ],
+        "canCreate": [
+            {
+                "serviceId": "rbs.billing",
+                "error": "{{this.response.cause}}"
+            },
+            {
+                "serviceId": "rbs.cart",
+                "error": "{{this.response.cause}}"
+            }
+        ]
+    }
+    const result = engine.execute(input)
+    expect(result.length).toEqual(1)
 })

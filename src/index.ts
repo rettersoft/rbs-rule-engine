@@ -21,8 +21,7 @@ export class RuleEngine {
                 if (!input.length) return []
 
                 const outputs: any[] = []
-                for (const item of input) 
-                    outputs.push(...this.tryRuleSet(item, rules, all))
+                for (const item of input) outputs.push(...this.tryRuleSet(item, rules, all))
                 return outputs
             } else return this.tryRuleSet(input, rules, all)
         }
@@ -60,17 +59,19 @@ export class RuleEngine {
         for (const field of Object.keys(rule)) {
             try {
                 const parts = field.split('.')
-                const left = this.resolveValue(input, parts)
+                const left = this.resolveValue(input, [...parts])
+                console.log('left', left, field, parts, rule[field])
                 if (rule[field]) {
-                    if (Array.isArray(parts) && parts.length) {
-                        let result = true
-                        if (rule[field].all) {
-                            result = left.every((sub: any) => {
+                    if (Array.isArray(left) && left.length) {
+                        if (rule[field].all) 
+                            return left.every((sub: any) => {
                                 const param = this.resolveValue(sub, [...parts])
                                 return this.tryRule(rule, field, param, input)
                             })
-                        }
-                        return result
+                        return left.some((sub: any) => {
+                            const param = this.resolveValue(sub, [...parts])
+                            return this.tryRule(rule, field, param, input)
+                        })
                     }
 
                     if (!this.tryRule(rule, field, left, input)) return false
@@ -86,8 +87,7 @@ export class RuleEngine {
     protected tryRule(rule: any, field: string, param: string, input: any) {
         for (const operator of Object.keys(rule[field])) {
             if (operator === 'all') continue
-            else if (!this.compare(operator, param, rule[field][operator], input))
-                return false
+            else if (!this.compare(operator, param, rule[field][operator], input)) return false
         }
         return true
     }
@@ -97,7 +97,7 @@ export class RuleEngine {
         if (!part) return undefined
 
         const left = input[part]
-        if (Array.isArray(left) || !parts.length) return left
+        if (!parts.length) return left
         else return this.resolveValue(left, parts)
     }
 
