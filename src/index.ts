@@ -58,12 +58,24 @@ export class RuleEngine {
     protected checkRule(input: any, rule: any): boolean {
         for (const field of Object.keys(rule)) {
             try {
+                for (const fieldKey of Object.keys(rule[field])) {
+                    if(rule[field][fieldKey]){
+                        let right = rule[field][fieldKey]
+                        if (right && typeof right === 'string' && right.startsWith('$.')) {
+                          const valSyntax = right.replace('$.','')
+                          const parts = valSyntax.split('.')
+                          right = this.resolveValue(input, [...parts])
+                          console.log('right', right, field, parts, rule[field], rule[field][fieldKey])
+                        }
+                        rule[field][fieldKey] = right
+                    }
+                }
                 const parts = field.split('.')
                 const left = this.resolveValue(input, [...parts])
                 console.log('left', left, field, parts, rule[field])
                 if (rule[field]) {
                     if (Array.isArray(left) && left.length) {
-                        if (rule[field].all) 
+                        if (rule[field].all)
                             return left.every((sub: any) => {
                                 const param = this.resolveValue(sub, [...parts])
                                 return this.tryRule(rule, field, param, input)

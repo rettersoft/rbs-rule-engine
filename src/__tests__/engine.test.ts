@@ -283,6 +283,29 @@ const ARRAY_PATHFINDER_CONFIG = {
     ],
 }
 
+const RIGHT_VALUE_REPLACER = {
+    rules: [
+        {
+            output: {
+                on: true,
+            },
+            rules: [
+                {
+                    'path.answer': { EQ: '$.request.awesomeValue' },
+                },
+            ],
+        },
+    ],
+}
+
+test('check right value equality', () => {
+    const engine = new RuleEngine(RIGHT_VALUE_REPLACER)
+
+    const result = engine.execute({ path: { answer: 'nice' }, request: { awesomeValue: 'nice' } } )
+    expect(result.length).toEqual(1)
+    expect(result.pop().output).toEqual({ on: true })
+})
+
 test('locate zone by address', () => {
     const engine = new RuleEngine(ZONE_CONFIG)
 
