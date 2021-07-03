@@ -62,25 +62,30 @@ export class RuleEngine {
                     if(rule[field][fieldKey]){
                         let right = rule[field][fieldKey]
                         if (right && typeof right === 'string' && right.startsWith('$.')) {
-                          const valSyntax = right.replace('$.','')
-                          const parts = valSyntax.split('.')
-                          right = this.resolveValue(input, [...parts])
-                          console.log('right', right, field, parts, rule[field], rule[field][fieldKey])
+                            const valSyntax = right.replace('$.','')
+                            const parts = valSyntax.split('.')
+                            right = this.resolveValue(input, [...parts])
                         }
                         rule[field][fieldKey] = right
                     }
                 }
                 const parts = field.split('.')
                 const left = this.resolveValue(input, [...parts])
-                console.log('left', left, field, parts, rule[field])
+                const types = new Set(['string', 'number', 'boolean'])
                 if (rule[field]) {
                     if (Array.isArray(left) && left.length) {
                         if (rule[field].all)
                             return left.every((sub: any) => {
+                                if (types.has(typeof left[0]))
+                                    return this.tryRule(rule, field, sub, input)
+
                                 const param = this.resolveValue(sub, [...parts])
                                 return this.tryRule(rule, field, param, input)
                             })
                         return left.some((sub: any) => {
+                            if (types.has(typeof left[0]))
+                                return this.tryRule(rule, field, sub, input)
+
                             const param = this.resolveValue(sub, [...parts])
                             return this.tryRule(rule, field, param, input)
                         })
@@ -152,7 +157,8 @@ export class RuleEngine {
         if (Array.isArray(right)) return isPointInPolygon(left, right)
         else if (right.center && right.radius)
             return isPointWithinRadius(left, right.center, right.radius)
-        throw new Error(`IN_GEO(${JSON.stringify(left)}/${JSON.stringify(right)}) is not valid`)
+        // throw new Error(`IN_GEO(${JSON.stringify(left)}/${JSON.stringify(right)}) is not valid`)
+        return false
     }
 
     protected isIn(left: any, right: any): any {
@@ -168,7 +174,8 @@ export class RuleEngine {
             if (typeof right === 'string') return left.includes(right)
             else if (Array.isArray(right)) return right.includes(left)
         }
-        throw new Error(`IN(${JSON.stringify(left)}/${JSON.stringify(right)}) is not valid`)
+        // throw new Error(`IN(${JSON.stringify(left)}/${JSON.stringify(right)}) is not valid`)
+        return false
     }
 
     protected isDateTime(left: any, right: any, input: any): any {
@@ -196,6 +203,7 @@ export class RuleEngine {
                 }
             }
         }
-        throw new Error(`DATE(${JSON.stringify(left)}/${JSON.stringify(right)}) is not valid`)
+        // throw new Error(`DATE(${JSON.stringify(left)}/${JSON.stringify(right)}) is not valid`)
+        return false
     }
 }
