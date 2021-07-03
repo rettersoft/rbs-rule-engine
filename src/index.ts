@@ -8,6 +8,7 @@ if (!process.env.ENGINE_MODE && process.env.NODE_ENV === 'test') process.env.ENG
 export class RuleEngine {
     protected debug = process.env.ENGINE_MODE === 'debug'
     protected ruleSets: any
+    protected types = new Set(['string', 'number', 'boolean'])
 
     constructor(ruleSets: any, options?: any) {
         if (options) this.debug = !!options.debug
@@ -71,19 +72,18 @@ export class RuleEngine {
                 }
                 const parts = field.split('.')
                 const left = this.resolveValue(input, [...parts])
-                const types = new Set(['string', 'number', 'boolean'])
                 if (rule[field]) {
                     if (Array.isArray(left) && left.length) {
                         if (rule[field].all)
                             return left.every((sub: any) => {
-                                if (types.has(typeof left[0]))
+                                if (this.types.has(typeof left[0]))
                                     return this.tryRule(rule, field, sub, input)
 
                                 const param = this.resolveValue(sub, [...parts])
                                 return this.tryRule(rule, field, param, input)
                             })
                         return left.some((sub: any) => {
-                            if (types.has(typeof left[0]))
+                            if (this.types.has(typeof left[0]))
                                 return this.tryRule(rule, field, sub, input)
 
                             const param = this.resolveValue(sub, [...parts])
@@ -163,15 +163,15 @@ export class RuleEngine {
 
     protected isIn(left: any, right: any): any {
         if (Array.isArray(left)) {
-            if (typeof right === 'string') return left.includes(right)
+            if (this.types.has(typeof right)) return left.includes(right)
             else if (right && Array.isArray(right.values)) {
                 if (!right.all)
                     return right.values.find((item: any) => left.find((val: any) => val === item))
                 else return right.values.every((item: any) => left.find((val: any) => val === item))
             } else if (Array.isArray(right))
                 return right.every((item: any) => left.find((val: any) => val === item))
-        } else if (typeof left === 'string') {
-            if (typeof right === 'string') return left.includes(right)
+        } else if (this.types.has(typeof left )) {
+            if (this.types.has(typeof right)) return left.includes(right)
             else if (Array.isArray(right)) return right.includes(left)
         }
         // throw new Error(`IN(${JSON.stringify(left)}/${JSON.stringify(right)}) is not valid`)
