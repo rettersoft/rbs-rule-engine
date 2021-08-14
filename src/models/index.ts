@@ -6,6 +6,8 @@ export enum Operator {
     GREATER_THAN = 'GT',
     GREATER_THAN_EQUAL = 'GTE',
     IN = 'IN',
+    IS = 'IS',
+    LENGTH = 'LN',
     LESS_THAN = 'LT',
     LESS_THAN_EQUAL = 'LTE',
     LIKE = 'LK',

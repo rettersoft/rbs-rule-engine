@@ -134,6 +134,11 @@ export class RuleEngine {
                 return left >= right
             case Operator.IN:
                 return this.isIn(left, right)
+            case Operator.IS:
+                const type = Array.isArray(left) ? 'array' : typeof left
+                return type === right
+            case Operator.LENGTH:
+                return left.length === right
             case Operator.LESS_THAN:
                 return left < right
             case Operator.LESS_THAN_EQUAL:
